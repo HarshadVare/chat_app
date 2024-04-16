@@ -27,80 +27,80 @@ class _AuthScreenState extends State<AuthScreen> {
   var _isAuthenticating = false;
 
   void _submit() async {
-    DateTime dateTime = DateTime.now();
-    String formattedDate = "${dateTime.year}-${dateTime.month}-${dateTime.day}";
-    String formattedTime =
-        "${dateTime.hour}:${dateTime.minute}:${dateTime.second}";
-    FirebaseFirestore.instance
-        .collection("Insurance_test")
-        .doc(dateTime.year.toString())
-        .collection(dateTime.month.toString())
-        .doc(formattedDate)
-        .collection("151542")
-        .doc("health")
-        .set({
-      'plans': {
-        'counts': FieldValue.arrayUnion([formattedTime]),
-        'id': 'hdfc_3465',
-        'name': 'Bajaj'
-      },
-      'user_details': {'id': '123524126', 'name': 'Kunal'}
-    }, SetOptions(merge: true));
+    // DateTime dateTime = DateTime.now();
+    // String formattedDate = "${dateTime.year}-${dateTime.month}-${dateTime.day}";
+    // String formattedTime =
+    //     "${dateTime.hour}:${dateTime.minute}:${dateTime.second}";
+    // FirebaseFirestore.instance
+    //     .collection("Insurance_test")
+    //     .doc(dateTime.year.toString())
+    //     .collection(dateTime.month.toString())
+    //     .doc(formattedDate)
+    //     .collection("151542")
+    //     .doc("health")
+    //     .set({
+    //   'plans': {
+    //     'counts': FieldValue.arrayUnion([formattedTime]),
+    //     'id': 'hdfc_3465',
+    //     'name': 'Bajaj'
+    //   },
+    //   'user_details': {'id': '123524126', 'name': 'Kunal'}
+    // }, SetOptions(merge: true));
 
     // await FirebaseFirestore.instance
     //     .collection('Insurance')
     //     .doc(currentDate.year.toString()).collection(collectionPath)
 
-    // final isValid = _form.currentState!.validate();
+    final isValid = _form.currentState!.validate();
 
-    // if (!isValid || !_isLogin && _selecteImage == null) {
-    //   //show error message
-    //   print('invalid Data');
-    //   return;
-    // }
-    // _form.currentState!.save();
-    // try {
-    //   setState(() {
-    //     _isAuthenticating = true;
-    //   });
-    //   if (_isLogin) {
-    //     //for login user
-    //     final userCredential = await _firebase.signInWithEmailAndPassword(
-    //         email: _enteredEmail, password: _enteredPassword);
-    //   } else {
-    //     //for sign up user
-    //     final userCredential = await _firebase.createUserWithEmailAndPassword(
-    //         email: _enteredEmail, password: _enteredPassword);
+    if (!isValid || !_isLogin && _selecteImage == null) {
+      //show error message
+      print('invalid Data');
+      return;
+    }
+    _form.currentState!.save();
+    try {
+      setState(() {
+        _isAuthenticating = true;
+      });
+      if (_isLogin) {
+        //for login user
+        final userCredential = await _firebase.signInWithEmailAndPassword(
+            email: _enteredEmail, password: _enteredPassword);
+      } else {
+        //for sign up user
+        final userCredential = await _firebase.createUserWithEmailAndPassword(
+            email: _enteredEmail, password: _enteredPassword);
 
-    //     //for storage images
-    //     final storageRef = FirebaseStorage.instance
-    //         .ref()
-    //         .child('user_images')
-    //         .child('${userCredential.user!.uid}.jpg');
-    //     await storageRef.putFile(_selecteImage!);
-    //     final imageUrl = await storageRef.getDownloadURL();
+        //for storage images
+        final storageRef = FirebaseStorage.instance
+            .ref()
+            .child('user_images')
+            .child('${userCredential.user!.uid}.jpg');
+        await storageRef.putFile(_selecteImage!);
+        final imageUrl = await storageRef.getDownloadURL();
 
-    //     //for store user data on firestore collections
-    //     await FirebaseFirestore.instance
-    //         .collection('users')
-    //         .doc(userCredential.user!.uid)
-    //         .set({
-    //       'username': _enteredUsername,
-    //       'email': _enteredEmail,
-    //       'image_url': imageUrl
-    //     });
-    //   }
-    // } on FirebaseAuthException catch (error) {
-    //   if (error.code == 'email-already-in-use') {
-    //     // ...
-    //   }
-    //   ScaffoldMessenger.of(context).clearSnackBars();
-    //   ScaffoldMessenger.of(context).showSnackBar(
-    //       SnackBar(content: Text(error.message ?? 'Authentication Failed')));
-    //   setState(() {
-    //     _isAuthenticating = false;
-    //   });
-    // }
+        //for store user data on firestore collections
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(userCredential.user!.uid)
+            .set({
+          'username': _enteredUsername,
+          'email': _enteredEmail,
+          'image_url': imageUrl
+        });
+      }
+    } on FirebaseAuthException catch (error) {
+      if (error.code == 'email-already-in-use') {
+        // ...
+      }
+      ScaffoldMessenger.of(context).clearSnackBars();
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(error.message ?? 'Authentication Failed')));
+      setState(() {
+        _isAuthenticating = false;
+      });
+    }
   }
 
   @override
